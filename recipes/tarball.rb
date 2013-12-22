@@ -177,5 +177,5 @@ ruby_block "make sure pam_limits.so is required" do
     fe.search_file_replace_line(/# session    required   pam_limits.so/, "session    required   pam_limits.so")
     fe.write_file
   end
-  notifies :restart, 'service[neo4j]'
+  notifies :restart, "service[neo4j-#{node.neo4j.server.instance_name}]"
 end
