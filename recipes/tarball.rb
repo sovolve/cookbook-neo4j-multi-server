@@ -1,7 +1,7 @@
 #
-# Cookbook Name:: neo4j-server
+# Cookbook Name:: neo4j-multi-server
 # Recipe:: tarball
-# Copyright 2012, Michael S. Klishin <michaelklishin@me.com>
+# Copyright 2013, Alex Willemsma <alex@sovovle.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ package 'lsof' # Required to launch the neo4j service
 
 user node.neo4j.server.user do
   comment "Neo4J Server user"
-  home    node.neo4j.server.installation_dir
+  home    node.neo4j.server.base_installation_dir
   shell   "/bin/bash"
   action  :create
 end
@@ -52,12 +52,13 @@ tmp_spatial = File.join(td, "neo4j-spatial-#{node.neo4j.server.plugins.spatial.v
 remote_file(tmp) do
   source node.neo4j.server.tarball.url
 
-  not_if "which neo4j"
+  not_if "test -f /tmp/neo4j-community-#{node.neo4j.server.version}.tar.gz"
 end
 
 if node.neo4j.server.plugins.spatial.enabled
   remote_file(tmp_spatial) do
     source node.neo4j.server.plugins.spatial.url
+    not_if "test -f /tmp/neo4j-spatial-#{node.neo4j.server.plugins.spatial.version}-server-plugin.zip"
   end
 end
 
@@ -114,7 +115,7 @@ end
 
 # 4. Symlink
 %w(neo4j neo4j-shell).each do |f|
-  link "/usr/local/bin/#{f}" do
+  link "/usr/local/bin/#{f}-#{node.neo4j.server.instance_name}" do
     owner node.neo4j.server.user
     group node.neo4j.server.user
     to    "#{node.neo4j.server.installation_dir}/bin/#{f}"
@@ -122,20 +123,20 @@ end
 end
 
 # 5. init.d Service
-template "/etc/init.d/neo4j" do
+template "/etc/init.d/neo4j-#{node.neo4j.server.instance_name}" do
   source "neo4j.init.erb"
   owner 'root'
   mode  0755
 end
 
-service "neo4j" do
+service "neo4j-#{node.neo4j.server.instance_name}" do
   supports :start => true, :stop => true, :restart => true
   if node.neo4j.server.enabled
     action :enable
   else
     action :disable
   end
-  subscribes :restart, 'template[/etc/init.d/neo4j]'
+  subscribes :restart, "template[/etc/init.d/neo4j-#{node.neo4j.server.instance_name}]"
 end
 
 # 6. Install config files
@@ -143,29 +144,31 @@ template "#{node.neo4j.server.conf_dir}/neo4j-server.properties" do
   source "neo4j-server.properties.erb"
   owner node.neo4j.server.user
   mode  0644
-  notifies :restart, 'service[neo4j]'
+  notifies :restart, "service[neo4j-#{node.neo4j.server.instance_name}]"
 end
 
 template "#{node.neo4j.server.conf_dir}/neo4j-wrapper.conf" do
   source "neo4j-wrapper.conf.erb"
   owner node.neo4j.server.user
   mode  0644
-  notifies :restart, 'service[neo4j]'
+  notifies :restart, "service[neo4j-#{node.neo4j.server.instance_name}]"
 end
 
 template "#{node.neo4j.server.conf_dir}/neo4j.properties" do
   source "neo4j.properties.erb"
   owner node.neo4j.server.user
   mode 0644
-  notifies :restart, 'service[neo4j]'
+  notifies :restart, "service[neo4j-#{node.neo4j.server.instance_name}]"
 end
 
 # 7. Know Your Limits
+# NOTE: This will over-ride with the last instance's settings. To use different
+# settings for different instances, use different node.neo4j.server.users for each.
 template "/etc/security/limits.d/#{node.neo4j.server.user}.conf" do
   source "neo4j-limits.conf.erb"
   owner node.neo4j.server.user
   mode  0644
-  notifies :restart, 'service[neo4j]'
+  notifies :restart, "service[neo4j-#{node.neo4j.server.instance_name}]"
 end
 
 ruby_block "make sure pam_limits.so is required" do

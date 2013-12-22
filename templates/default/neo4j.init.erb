@@ -14,12 +14,12 @@ if [ -f /etc/sysconfig/network ]; then source /etc/sysconfig/network; fi
 
 start() {
     # neo4j wrapper is smart enough to  change user and do similar things.
-    sudo /usr/local/bin/neo4j start
+    sudo <%= node.neo4j.server.installation_dir %>/bin/neo4j start
     return $?
 }
 
 stop() {
-    sudo /usr/local/bin/neo4j stop
+    sudo <%= node.neo4j.server.installation_dir %>/bin/neo4j stop
     return $?
 }
 
@@ -29,7 +29,7 @@ restart() {
 }
 
 status() {
-    sudo /usr/local/bin/neo4j status
+    sudo <%= node.neo4j.server.installation_dir %>/bin/neo4j status
     return $?
 }
 
