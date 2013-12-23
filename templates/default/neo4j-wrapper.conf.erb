@@ -2,8 +2,8 @@
 # JVM Parameters
 #********************************************************************
  
-wrapper.java.additional.1=-Dorg.neo4j.server.properties=<%= @conf_path %>/neo4j-server.properties
-wrapper.java.additional.2=-Djava.util.logging.config.file=<%= @conf_path %>/logging.properties
+wrapper.java.additional.1=-Dorg.neo4j.server.properties=<%= @conf_dir %>/neo4j-server.properties
+wrapper.java.additional.2=-Djava.util.logging.config.file=<%= @conf_dir %>/logging.properties
 
 # Initial Java Heap Size (in MB)
 wrapper.java.initmemory=<%= node.neo4j.server.jvm.xms %>
