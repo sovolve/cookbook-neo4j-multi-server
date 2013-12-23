@@ -38,28 +38,29 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   conf_dir = "#{install_dir}#{node.neo4j.server.conf_dir}"
   lock_path = "#{run_dir}/#{node.neo4j.server.base_name}-#{params[:instance_name]}.lock"
   pid_path = "#{run_dir}/#{node.neo4j.server.base_name}-#{params[:instance_name]}.pid"
+  user_name = "#{node.neo4j.server.base_name}-#{params[:instance_name]}"
 
   #
   # User accounts
   #
 
-  user node.neo4j.server.user do
+  user user_name do
     comment "Neo4J Server user"
     home    install_dir
     shell   "/bin/bash"
     action  :create
   end
 
-  group node.neo4j.server.user do
-    (m = []) << node.neo4j.server.user
+  group user_name do
+    (m = []) << user_name
     members m
     action :create
   end
 
   [install_dir, lib_dir, run_dir].each do |dir|
     directory dir do
-      owner node.neo4j.server.user
-      group node.neo4j.server.user
+      owner user_name
+      group user_name
       recursive true
       action    :create
     end
@@ -115,8 +116,8 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
 
   [conf_dir, data_dir, File.join(data_dir, "log")].each do |dir|
     directory dir do
-      owner     node.neo4j.server.user
-      group     node.neo4j.server.user
+      owner     user_name
+      group     user_name
       recursive true
       action    :create
     end
@@ -129,18 +130,18 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
    File.join(install_dir, "plugins"),
    install_dir].each do |dir|
     # Chef sets permissions only to leaf nodes, so we have to use a Bash script. MK.
-    bash "chown -R #{node.neo4j.server.user}:#{node.neo4j.server.user} #{dir}" do
+    bash "chown -R #{user_name}:#{user_name} #{dir}" do
       user "root"
 
-      code "chown -R #{node.neo4j.server.user}:#{node.neo4j.server.user} #{dir}"
+      code "chown -R #{user_name}:#{user_name} #{dir}"
     end
   end
 
   # 4. Symlink
   %w(neo4j neo4j-shell).each do |f|
     link "/usr/local/bin/#{f}-#{params[:instance_name]}" do
-      owner node.neo4j.server.user
-      group node.neo4j.server.user
+      owner user_name
+      group user_name
       to    "#{install_dir}/bin/#{f}"
     end
   end
@@ -171,7 +172,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   template "#{conf_dir}/neo4j-server.properties" do
     cookbook "neo4j-multi-server"
     source "neo4j-server.properties.erb"
-    owner node.neo4j.server.user
+    owner user_name
     mode  0644
     notifies :restart, "service[neo4j-#{params[:instance_name]}]"
     variables ({
@@ -184,7 +185,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   template "#{conf_dir}/neo4j-wrapper.conf" do
     cookbook "neo4j-multi-server"
     source "neo4j-wrapper.conf.erb"
-    owner node.neo4j.server.user
+    owner user_name
     mode  0644
     notifies :restart, "service[neo4j-#{params[:instance_name]}]"
     variables ({
@@ -192,6 +193,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
       pid_path: pid_path,
       lock_path: lock_path,
       instance_name: params[:instance_name],
+      user_name: user_name,
     })
 
   end
@@ -199,7 +201,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   template "#{conf_dir}/neo4j.properties" do
     cookbook "neo4j-multi-server"
     source "neo4j.properties.erb"
-    owner node.neo4j.server.user
+    owner user_name
     mode 0644
     notifies :restart, "service[neo4j-#{params[:instance_name]}]"
     variables ({
@@ -210,13 +212,16 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
 
   # 7. Know Your Limits
   # NOTE: This will over-ride with the last instance's settings. To use different
-  # settings for different instances, use different node.neo4j.server.users for each.
-  template "/etc/security/limits.d/#{node.neo4j.server.user}.conf" do
+  # settings for different instances, use different user_names for each.
+  template "/etc/security/limits.d/#{user_name}.conf" do
     cookbook "neo4j-multi-server"
     source "neo4j-limits.conf.erb"
-    owner node.neo4j.server.user
+    owner user_name
     mode  0644
     notifies :restart, "service[neo4j-#{params[:instance_name]}]"
+    variables ({
+      user_name: user_name,
+    })
   end
 
   ruby_block "make sure pam_limits.so is required" do
