@@ -18,10 +18,10 @@ default[:neo4j][:server][:run_dir]           = "/var/run/#{node[:neo4j][:server]
 
 default[:neo4j][:server][:installation_dir]  = "#{node[:neo4j][:server][:base_installation_dir]}/#{node[:neo4j][:server][:instance_name]}"
 default[:neo4j][:server][:lib_dir]           = "#{node[:neo4j][:server][:base_lib_dir]}/#{node[:neo4j][:server][:instance_name]}"
-default[:neo4j][:server][:data_dir]          = "#{node[:neo4j][:server][:lib_dir]}/data/graph.db"
-default[:neo4j][:server][:conf_dir]          = "#{node[:neo4j][:server][:installation_dir]}/conf"
-default[:neo4j][:server][:lock_path]         = "#{node[:neo4j][:server][:run_dir]}/#{node[:neo4j][:server][:base_name]}-#{node[:neo4j][:server][:instance_name]}.lock"
-default[:neo4j][:server][:pid_path]          = "#{node[:neo4j][:server][:run_dir]}/#{node[:neo4j][:server][:base_name]}-#{node[:neo4j][:server][:instance_name]}.pid"
+
+# Will be relative to base_install_dir/instance_name
+default[:neo4j][:server][:data_dir]          = "/data/graph.db"
+default[:neo4j][:server][:conf_dir]          = "/conf"
 
 default[:neo4j][:server][:enabled]           = true
 

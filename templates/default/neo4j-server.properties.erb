@@ -8,7 +8,7 @@
 #***************************************************************
 
 # location of the database directory 
-org.neo4j.server.database.location=<%= node.neo4j.server.data_dir %>
+org.neo4j.server.database.location=<%= @data_dir %>
 
 # let the webserver only listen on the specified IP. Default
 # is localhost (only accept local connections). Uncomment to allow
@@ -25,7 +25,7 @@ org.neo4j.server.webserver.address=<%= node.neo4j.server.http.host %>
 org.neo4j.server.webserver.http.enabled=true
 
 # http port (for all data, administrative, and UI access)
-org.neo4j.server.webserver.port=<%= node.neo4j.server.http.port %>
+org.neo4j.server.webserver.port=<%= @port %>
 
 #
 # HTTPS Connector
@@ -65,7 +65,7 @@ org.neo4j.server.webadmin.data.uri=/db/data/
 org.neo4j.server.webadmin.management.uri=/db/manage/
 
 # Low-level graph engine tuning file
-org.neo4j.server.db.tuning.properties=<%= node.neo4j.server.conf_dir %>/neo4j.properties
+org.neo4j.server.db.tuning.properties=<%= @conf_dir %>/neo4j.properties
 
 
 #Comma separated list of JAXRS packages contains JAXRS Resoruce, one package name for each mountpoint.
