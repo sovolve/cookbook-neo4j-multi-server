@@ -151,6 +151,10 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
     source "neo4j.init.erb"
     owner 'root'
     mode  0755
+    variables ({
+      install_dir: install_dir,
+      instance_name: params[:instance_name],
+    })
   end
 
   service "neo4j-#{params[:instance_name]}" do
