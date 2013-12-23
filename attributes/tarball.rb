@@ -13,10 +13,11 @@ default[:neo4j][:server][:base_name]         = 'neo4j-server'
 default[:neo4j][:server][:instance_name]     = 'main'
 
 default[:neo4j][:server][:base_installation_dir] = "/usr/local/#{node[:neo4j][:server][:base_name]}"
+default[:neo4j][:server][:base_lib_dir]           = "/var/lib/#{node[:neo4j][:server][:base_name]}"
 default[:neo4j][:server][:run_dir]           = '/var/run'
 
 default[:neo4j][:server][:installation_dir]  = "#{node[:neo4j][:server][:base_installation_dir]}/#{node[:neo4j][:server][:instance_name]}"
-default[:neo4j][:server][:lib_dir]           = "/var/lib/#{node[:neo4j][:server][:base_name]}/#{node[:neo4j][:server][:instance_name]}"
+default[:neo4j][:server][:lib_dir]           = "#{node[:neo4j][:server][:base_lib_dir]}/#{node[:neo4j][:server][:instance_name]}"
 default[:neo4j][:server][:data_dir]          = "#{node[:neo4j][:server][:lib_dir]}/data/graph.db"
 default[:neo4j][:server][:conf_dir]          = "#{node[:neo4j][:server][:installation_dir]}/conf"
 default[:neo4j][:server][:lock_path]         = "#{node[:neo4j][:server][:run_dir]}/#{node[:neo4j][:server][:base_name]}-#{node[:neo4j][:server][:instance_name]}.lock"
