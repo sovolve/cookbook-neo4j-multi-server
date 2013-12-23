@@ -20,3 +20,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+# Creates a single neo4j instance called 'main'
+neo4j_server do
+  instance_name 'main'
+  port '4747'
+end

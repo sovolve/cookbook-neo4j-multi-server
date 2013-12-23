@@ -147,6 +147,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
 
   # 5. init.d Service
   template "/etc/init.d/neo4j-#{params[:instance_name]}" do
+    cookbook "neo4j-multi-server"
     source "neo4j.init.erb"
     owner 'root'
     mode  0755
@@ -164,6 +165,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
 
   # 6. Install config files
   template "#{conf_dir}/neo4j-server.properties" do
+    cookbook "neo4j-multi-server"
     source "neo4j-server.properties.erb"
     owner node.neo4j.server.user
     mode  0644
@@ -176,6 +178,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   end
 
   template "#{conf_dir}/neo4j-wrapper.conf" do
+    cookbook "neo4j-multi-server"
     source "neo4j-wrapper.conf.erb"
     owner node.neo4j.server.user
     mode  0644
@@ -190,6 +193,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   end
 
   template "#{conf_dir}/neo4j.properties" do
+    cookbook "neo4j-multi-server"
     source "neo4j.properties.erb"
     owner node.neo4j.server.user
     mode 0644
@@ -204,6 +208,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   # NOTE: This will over-ride with the last instance's settings. To use different
   # settings for different instances, use different node.neo4j.server.users for each.
   template "/etc/security/limits.d/#{node.neo4j.server.user}.conf" do
+    cookbook "neo4j-multi-server"
     source "neo4j-limits.conf.erb"
     owner node.neo4j.server.user
     mode  0644
