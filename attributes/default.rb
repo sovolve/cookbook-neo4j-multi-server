@@ -16,9 +16,6 @@ default[:neo4j][:server][:base_installation_dir] = "/usr/local/#{node[:neo4j][:s
 default[:neo4j][:server][:base_lib_dir]           = "/var/lib/#{node[:neo4j][:server][:base_name]}"
 default[:neo4j][:server][:run_dir]           = "/var/run/#{node[:neo4j][:server][:base_name]}"
 
-default[:neo4j][:server][:installation_dir]  = "#{node[:neo4j][:server][:base_installation_dir]}/#{node[:neo4j][:server][:instance_name]}"
-default[:neo4j][:server][:lib_dir]           = "#{node[:neo4j][:server][:base_lib_dir]}/#{node[:neo4j][:server][:instance_name]}"
-
 # Will be relative to base_install_dir/instance_name
 default[:neo4j][:server][:data_dir]          = "/data/graph.db"
 default[:neo4j][:server][:conf_dir]          = "/conf"
