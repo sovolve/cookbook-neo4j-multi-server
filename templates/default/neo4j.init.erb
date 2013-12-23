@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
-# neo4j
+# neo4j-<%= node.neo4j.server.instance_name %>
 #
 # chkconfig:   - 58 48
-# description: neo4j
-# processname: neo4j
+# description: neo4j-<%= node.neo4j.server.instance_name %>
+# processname: neo4j-<%= node.neo4j.server.instance_name %>
 
 # Source networking configuration
 if [ -f /etc/sysconfig/network ]; then source /etc/sysconfig/network; fi
