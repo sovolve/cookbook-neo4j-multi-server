@@ -31,7 +31,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   package 'lsof' # Required to launch the neo4j service
 
   # set paths for this instance:
-  install_dir = "#{node.neo4j.server.base_install_dir}/#{params[:instance_name]}"
+  install_dir = "#{node.neo4j.server.base_installation_dir}/#{params[:instance_name]}"
   lib_dir = "#{node.neo4j.server.base_lib_dir}/#{params[:instance_name]}"
   run_dir = node.neo4j.server.run_dir
   data_dir = "#{install_dir}#{node.neo4j.server.data_dir}"
