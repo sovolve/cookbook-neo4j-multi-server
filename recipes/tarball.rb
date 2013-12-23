@@ -42,7 +42,7 @@ group node.neo4j.server.user do
   action :create
 end
 
-[node.neo4j.server.base_installation_dir, node.neo4j.server.base_lib_dir].each do |dir|
+[node.neo4j.server.base_installation_dir, node.neo4j.server.base_lib_dir, node.neo4j.server.run_dir].each do |dir|
   directory dir do
     owner node.neo4j.server.user
     group node.neo4j.server.user
