@@ -76,13 +76,13 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   remote_file(tmp) do
     source node.neo4j.server.tarball.url
 
-    not_if "test -f /tmp/neo4j-community-#{node.neo4j.server.version}.tar.gz"
+    not_if "which neo4j-#{params[:instance_name]}"
   end
 
   if node.neo4j.server.plugins.spatial.enabled
     remote_file(tmp_spatial) do
       source node.neo4j.server.plugins.spatial.url
-      not_if "test -f /tmp/neo4j-spatial-#{node.neo4j.server.plugins.spatial.version}-server-plugin.zip"
+      not_if "test -f {install_dir}/plugins/neo4j-spatial-#{node.neo4j.server.plugins.spatial.version}.jar"
     end
   end
 
@@ -226,7 +226,7 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
   service "neo4j-#{params[:instance_name]}" do
     supports :start => true, :stop => true, :restart => true
     if node.neo4j.server.enabled
-      action [:start, :enable] # It's important we start and enable the service here, so that it's up for other things that may use it (such as our app's migrations).
+      action [:restart, :enable] # It's important we start and enable the service here, so that it's up for other things that may use it (such as our app's migrations).
     else
       action :disable
     end
