@@ -158,16 +158,6 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
     })
   end
 
-  service "neo4j-#{params[:instance_name]}" do
-    supports :start => true, :stop => true, :restart => true
-    if node.neo4j.server.enabled
-      action :enable
-    else
-      action :disable
-    end
-    subscribes :restart, "template[/etc/init.d/neo4j-#{params[:instance_name]}]"
-  end
-
   # 6. Install config files
   template "#{conf_dir}/neo4j-server.properties" do
     cookbook "neo4j-multi-server"
@@ -231,5 +221,15 @@ define :neo4j_server, instance_name: 'main', port: '4747', action: 'install' do
       fe.write_file
     end
     notifies :restart, "service[neo4j-#{params[:instance_name]}]"
+  end
+
+  service "neo4j-#{params[:instance_name]}" do
+    supports :start => true, :stop => true, :restart => true
+    if node.neo4j.server.enabled
+      action [:start, :enable] # It's important we start and enable the service here, so that it's up for other things that may use it (such as our app's migrations).
+    else
+      action :disable
+    end
+    subscribes :restart, "template[/etc/init.d/neo4j-#{params[:instance_name]}]"
   end
 end
